@@ -1,0 +1,196 @@
+package com.mayuratech.customermanagement.service;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.mayuratech.customermanagement.model.CustomerManagementModel;
+import com.mayuratech.customermanagement.repository.TicketRepositary;
+
+@Service
+public class TicketService {
+
+@Autowired
+TicketRepositary ticketRepositary;
+
+public List<CustomerManagementModel> getAllTickets(){
+	List<CustomerManagementModel> customer=new ArrayList<CustomerManagementModel>();
+	return (List<CustomerManagementModel>) ticketRepositary.findAll();
+}
+
+public CustomerManagementModel getTicketById(int id) {
+	return ticketRepositary.findAllById(id);
+}
+
+public void saveOrUpdate(List<CustomerManagementModel> customer) {
+	ticketRepositary.saveAll(customer);
+}
+
+public void deletingById(int id) {
+	ticketRepositary.deleteById(id);
+}
+public void updateById(int id) {
+	CustomerManagementModel customer=new CustomerManagementModel();
+	customer.setAmount(id);
+	ticketRepositary.save(customer);
+}
+
+}
+
+package com.mayuratech.customermanagement.controller;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.mayuratech.customermanagement.model.CustomerManagementModel;
+import com.mayuratech.customermanagement.service.TicketService;
+
+@RestController
+@RequestMapping("/tickets")
+public class CustomerManagementController {
+
+	@Autowired
+	TicketService ticketService;
+
+	@PostMapping("/bookticket")
+	public String bookticket(@RequestBody List<CustomerManagementModel> customer) {
+		ticketService.saveOrUpdate(customer);
+		return "Tickets booked" + customer.size();
+	}
+
+	@GetMapping("/booktickets")
+	public List<CustomerManagementModel> getTickets() {
+		return ticketService.getAllTickets();
+	}
+
+	@GetMapping("/booktickets/{id}")
+	public CustomerManagementModel getTicketsId(@PathVariable("id") int id) {
+		return ticketService.getTicketById(id);
+	}
+
+	@DeleteMapping("/booktickets/{id}")
+	public String deleteStudent(@PathVariable("id") int id) {
+		ticketService.deletingById(id);
+		return "Successfully Deleted !!";
+	}
+
+	@PutMapping("/book/{id}")
+	public String updateStudent(@RequestBody CustomerManagementModel customer, @PathVariable int id) {
+
+		ticketService.updateById(id);
+		return "successfully updated";
+	}
+}
+
+
+package com.mayuratech.customermanagement.dao;
+
+import org.springframework.data.repository.CrudRepository;
+
+import com.mayuratech.customermanagement.model.CustomerManagementModel;
+
+public interface CustomerManagementDao extends CrudRepository<CustomerManagementModel,Integer >{
+	
+}
+
+
+package com.mayuratech.customermanagement.model;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name="Ticket")
+
+public class CustomerManagementModel {
+
+	@Id
+	@GeneratedValue
+	private int id;
+	private int amount;
+	private String category;
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	public int getAmount() {
+		return amount;
+	}
+	public void setAmount(int amount) {
+		this.amount = amount;
+	}
+	public String getCategory() {
+		return category;
+	}
+	public void setCategory(String category) {
+		this.category = category;
+	}
+	public CustomerManagementModel() {
+		super();
+	}
+	@Override
+	public String toString() {
+		return "Ticket [id=" + id + ", amount=" + amount + ", category=" + category + "]";
+	}
+	public CustomerManagementModel(int id, int amount, String category) {
+		super();
+		this.id = id;
+		this.amount = amount;
+		this.category = category;
+	}
+	
+}
+
+package com.mayuratech.customermanagement.repository;
+
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
+
+import com.mayuratech.customermanagement.model.CustomerManagementModel;
+
+
+@Repository
+public interface TicketRepositary extends CrudRepository<CustomerManagementModel,Integer >{
+
+	CustomerManagementModel findAllById(int id);
+
+
+	
+}
+
+
+package com.mayuratech.customermanagement.repository;
+
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
+
+import com.mayuratech.customermanagement.model.CustomerManagementModel;
+
+
+@Repository
+public interface TicketRepositary extends CrudRepository<CustomerManagementModel,Integer >{
+
+	CustomerManagementModel findAllById(int id);
+
+
+	
+}
+
+
